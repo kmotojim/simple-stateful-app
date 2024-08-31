@@ -1,0 +1,10 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: route-simple-stateful-app
+spec:
+  to:
+    kind: Service
+    name: node-app-service
+  port:
+    targetPort: 3000

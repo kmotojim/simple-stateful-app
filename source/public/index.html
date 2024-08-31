@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node.js MySQL App</title>
+</head>
+<body>
+    <h1>Text Storage App</h1>
+
+    <form id="addForm">
+        <label for="content">Enter text:</label>
+        <input type="text" id="content" name="content" required>
+        <button type="submit">Add Text</button>
+    </form>
+
+    <h2>Search Text</h2>
+    <form id="searchForm">
+        <input type="text" name="q" id="searchQuery" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <h2>Search Results:</h2>
+    <ul id="results"></ul>
+
+    <script>
+        // テキストの追加時に入力欄を空にする
+        document.getElementById('addForm').onsubmit = function(event) {
+            event.preventDefault();  // デフォルトのフォーム送信をキャンセル
+            const contentInput = document.getElementById('content');
+            const content = contentInput.value;
+
+            // テキストをPOSTで送信
+            fetch('/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'content=' + encodeURIComponent(content)
+            }).then(response => {
+                if (response.ok) {
+                    // 成功したら、テキスト入力欄を空にする
+                    contentInput.value = '';
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        };
+
+        // 検索機能の処理
+        const searchForm = document.getElementById('searchForm');
+        searchForm.onsubmit = async (event) => {
+            event.preventDefault();
+            const query = document.getElementById('searchQuery').value;
+            const response = await fetch(`/search?q=${query}`);
+            const results = await response.json();
+            const resultsList = document.getElementById('results');
+            resultsList.innerHTML = '';
+            results.forEach(result => {
+                const li = document.createElement('li');
+                li.textContent = result.content;
+                resultsList.appendChild(li);
+            });
+        };
+    </script>
+</body>
+</html>

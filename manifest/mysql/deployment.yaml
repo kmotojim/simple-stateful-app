@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: #Serviceからディスカバリーしてもらう為のKey:Valueをセットします
+        app: mysql
+    spec:
+      containers: #RedHatが公開している安心安全なMysqlコンテナイメージです。Container Hostからのrootログインに限ってはPWレスでログイン可能。
+      - image: registry.redhat.io/rhel9/mysql-80 
+        name: mysql
+        envFrom: #別ファイルから環境変数を読み込む様に指定します
+        - secretRef: #Secretを参照するように指定します
+            name: mysql-secret #対象のSecretファイル名
+        ports: #Mysqlのポート番号です
+        - containerPort: 3306 
+          name: mysql
+        volumeMounts: #永続ボリュームをマウントするべきパスはLinux上で動くMysqlの仕様です。
+        - name: mysql-pv 
+          mountPath: /var/lib/mysql 
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d
+      volumes: #PVCから作成するPVの名称を指定します
+      - name: mysql-pv 
+        persistentVolumeClaim: #利用するPVCの名称を指定します
+          claimName: mysql-pvc 
+      - name: init-sql
+        configMap:
+          name: mysql-initdb-config

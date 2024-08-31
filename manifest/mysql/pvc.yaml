@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+spec:
+  accessModes: #アクセスモードはStorageClassによって何が選べるか変わります。AWS EBSは仕様上RWOしか選べません
+    - ReadWriteOnce 
+  resources:
+    requests: #要求するStorage容量です。適切な容量を選択しましょう
+      storage: 1Gi 
