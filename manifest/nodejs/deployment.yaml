@@ -19,9 +19,15 @@ spec:
         - containerPort: 3000
         env:
         - name: DB_HOST
-          value: "mysql-service.simple-stateful-app.svc.cluster.local"
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-access
+              key: SERVICE_DISCOVERY
         - name: DB_PORT  
-          value: "3306"
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-access
+              key: PORT_NUMBER
         - name: DB_USER
           valueFrom:
             secretKeyRef:

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-access
+data:
+  SERVICE_DISCOVERY: mysql-service.simple-stateful-app.svc.cluster.local
+  PORT_NUMBER: 3306
