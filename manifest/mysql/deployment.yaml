@@ -13,8 +13,8 @@ spec:
       labels: #Serviceからディスカバリーしてもらう為のKey:Valueをセットします
         app: mysql
     spec:
-      containers: #RedHatが公開している安心安全なMysqlコンテナイメージです。Container Hostからのrootログインに限ってはPWレスでログイン可能。
-      - image: registry.redhat.io/rhel9/mysql-80 
+      containers: 
+      - image: mysql 
         name: mysql
         envFrom: #別ファイルから環境変数を読み込む様に指定します
         - secretRef: #Secretを参照するように指定します
