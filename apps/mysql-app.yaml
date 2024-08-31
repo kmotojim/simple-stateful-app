@@ -4,7 +4,7 @@ metadata:
   name: mysql
   namespace: openshift-gitops
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "3"
 spec:
   destination:
     namespace: simple-stateful-app
@@ -14,7 +14,7 @@ spec:
     repoURL: >-
       https://gitlab.com/masaki-oomura/simple-stateful-app.git
     targetRevision: main
-  project: default
+  project: simple-stateful-app
   syncPolicy:
     automated:
       prune: true
