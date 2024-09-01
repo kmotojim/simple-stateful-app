@@ -4,7 +4,7 @@ metadata:
   name: nodejs-app
   namespace: openshift-gitops
   annotations:
-    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   destination:
     namespace: simple-stateful-app
@@ -21,3 +21,4 @@ spec:
       selfHeal: true
     syncOptions:
       - ApplyOutOfSyncOnly=true
+      - CreateNamespace=true
