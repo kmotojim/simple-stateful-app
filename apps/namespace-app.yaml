@@ -4,7 +4,7 @@ metadata:
   name: simple-stateful-app-namespace
   namespace: openshift-gitops
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   destination:
     namespace: simple-stateful-app
