@@ -14,7 +14,7 @@ spec:
         app: mysql
     spec:
       containers: 
-      - image: mysql 
+      - image: registry.redhat.io/rhel8/mysql-80 
         name: mysql
         envFrom: #別ファイルから環境変数を読み込む様に指定します
         - secretRef: #Secretを参照するように指定します
