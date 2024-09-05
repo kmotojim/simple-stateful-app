@@ -1,15 +1,12 @@
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const os = require('os');  // osモジュールでホスト名を取得
+const os = require('os');
 const path = require('path');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
-
-// テンプレートエンジンにEJSを設定
-app.set('view engine', 'ejs');
+app.use(express.static('public')); // publicフォルダを静的コンテンツとして提供
 
 // ホスト名の取得
 const hostname = os.hostname();
@@ -36,11 +33,7 @@ app.post('/add', (req, res) => {
     });
 });
 
-// ホスト名を渡してHTMLをレンダリング
-app.get('/', (req, res) => {
-    res.render('index', { hostname: hostname });
-});
-
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+// ホスト名を返すAPI
+app.get('/hostname', (req, res) => {
+    res.json({ hostname: hostname });
 });
