@@ -2,10 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
-const os = require('os');
 
 const app = express();
-const hostname = os.hostname();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
