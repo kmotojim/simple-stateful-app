@@ -7,7 +7,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-18:latest
 # コンテナ起動した後に遷移させる作業ディレクトリの設定
 WORKDIR /usr/src/app
 
-RUN npm install express mysql2 body-parser dotenv
+RUN npm install express mysql2 body-parser dotenv ejs
 
 
 # ホストで作成済みのnode.jsアプリケーションの動作に必要なソースコード（一部）をコンテナ内の作業ディレクトリに転送

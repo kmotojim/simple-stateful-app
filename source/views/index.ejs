@@ -6,8 +6,7 @@
     <title>Node.js MySQL App</title>
 </head>
 <body>
-    <h1>Text Storage App</h1>
-
+    <h1>Text Storage App - Host: <%= hostname %></h1> <!-- ホスト名を埋め込む -->
     <form id="addForm">
         <label for="content">Enter text:</label>
         <input type="text" id="content" name="content" required>
@@ -24,13 +23,11 @@
     <ul id="results"></ul>
 
     <script>
-        // テキストの追加時に入力欄を空にする
         document.getElementById('addForm').onsubmit = function(event) {
-            event.preventDefault();  // デフォルトのフォーム送信をキャンセル
+            event.preventDefault();
             const contentInput = document.getElementById('content');
             const content = contentInput.value;
 
-            // テキストをPOSTで送信
             fetch('/add', {
                 method: 'POST',
                 headers: {
@@ -39,7 +36,6 @@
                 body: 'content=' + encodeURIComponent(content)
             }).then(response => {
                 if (response.ok) {
-                    // 成功したら、テキスト入力欄を空にする
                     contentInput.value = '';
                 }
             }).catch(error => {
@@ -47,7 +43,6 @@
             });
         };
 
-        // 検索機能の処理
         const searchForm = document.getElementById('searchForm');
         searchForm.onsubmit = async (event) => {
             event.preventDefault();

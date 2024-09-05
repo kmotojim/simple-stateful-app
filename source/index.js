@@ -1,15 +1,21 @@
-require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
+const os = require('os');  // osモジュールでホスト名を取得
+const path = require('path');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
+// テンプレートエンジンにEJSを設定
+app.set('view engine', 'ejs');
+
+// ホスト名の取得
+const hostname = os.hostname();
+
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME
@@ -30,14 +36,9 @@ app.post('/add', (req, res) => {
     });
 });
 
-// テキストの検索
-app.get('/search', (req, res) => {
-    const searchTerm = req.query.q;
-    const query = 'SELECT * FROM entries WHERE content LIKE ?';
-    connection.query(query, [`%${searchTerm}%`], (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
+// ホスト名を渡してHTMLをレンダリング
+app.get('/', (req, res) => {
+    res.render('index', { hostname: hostname });
 });
 
 app.listen(3000, () => {
