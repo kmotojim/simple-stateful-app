@@ -6,11 +6,16 @@ const path = require('path');
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public')); // publicフォルダを静的コンテンツとして提供
 
-// ホスト名の取得
-const hostname = os.hostname();
+// 'source/public'ディレクトリ内の静的ファイルを提供
+app.use(express.static(path.join(__dirname, 'source/public')));
 
+// ホスト名を返すAPIエンドポイント
+app.get('/hostname', (req, res) => {
+    res.json({ hostname: os.hostname() });
+});
+
+// MySQL接続設定
 const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -23,7 +28,7 @@ connection.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-// テキストの保存
+// テキストの保存エンドポイント
 app.post('/add', (req, res) => {
     const content = req.body.content;
     const query = 'INSERT INTO entries (content) VALUES (?)';
@@ -33,7 +38,17 @@ app.post('/add', (req, res) => {
     });
 });
 
-// ホスト名を返すAPI
-app.get('/hostname', (req, res) => {
-    res.json({ hostname: hostname });
+// テキストの検索エンドポイント
+app.get('/search', (req, res) => {
+    const searchTerm = req.query.q;
+    const query = 'SELECT * FROM entries WHERE content LIKE ?';
+    connection.query(query, [`%${searchTerm}%`], (err, results) => {
+        if (err) throw err;
+        res.json(results);
+    });
+});
+
+// サーバーの起動
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });

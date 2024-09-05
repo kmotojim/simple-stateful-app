@@ -6,7 +6,8 @@
     <title>Node.js MySQL App</title>
 </head>
 <body>
-    <h1>Text Storage App - Host: <span id="hostname"></span></h1> <!-- ホスト名を動的に表示 -->
+    <h1>Text Storage App - Host: <span id="hostname"></span></h1>
+
     <form id="addForm">
         <label for="content">Enter text:</label>
         <input type="text" id="content" name="content" required>
@@ -23,13 +24,14 @@
     <ul id="results"></ul>
 
     <script>
-        // ホスト名を取得して表示する
+        // ホスト名を取得して表示
         fetch('/hostname')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('hostname').textContent = data.hostname;
             });
 
+        // テキストの追加時に入力欄を空にする
         document.getElementById('addForm').onsubmit = function(event) {
             event.preventDefault();
             const contentInput = document.getElementById('content');
@@ -50,6 +52,7 @@
             });
         };
 
+        // 検索機能の処理
         const searchForm = document.getElementById('searchForm');
         searchForm.onsubmit = async (event) => {
             event.preventDefault();
