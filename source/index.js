@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // 'source/public'ディレクトリ内の静的ファイルを提供
-app.use(express.static(path.join(__dirname, 'source/public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ホスト名を返すAPIエンドポイント
 app.get('/hostname', (req, res) => {
