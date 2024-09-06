@@ -8,3 +8,4 @@ spec:
   resources:
     requests: #要求するStorage容量です。適切な容量を選択しましょう
       storage: 1Gi 
+  volumeMode: Filesystem
