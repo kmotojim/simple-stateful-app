@@ -8,3 +8,6 @@ spec:
     name: node-app-service
   port:
     targetPort: 3000-tcp
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
