@@ -13,6 +13,8 @@ spec:
     path: manifest/mysql
     repoURL: >-
       https://gitlab.com/masaki-oomura/simple-stateful-app.git
+    #ここを自分のリポジトリのURLに変更します
+    #例：https://gitlab.com/<your-username>/simple-stateful-app.git
     targetRevision: main
   project: simple-stateful-app
   syncPolicy:
