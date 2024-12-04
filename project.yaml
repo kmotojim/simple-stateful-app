@@ -3,8 +3,6 @@ kind: AppProject
 metadata:
   name: simple-stateful-app
   namespace: openshift-gitops
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   clusterResourceWhitelist:
     - group: '*'
