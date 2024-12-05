@@ -14,9 +14,8 @@ spec:
     spec:
       containers:
       - name: node-app
-        image: quay.io/rh-ee-moomura/simple-stateful-app:latest
+        image: <your-dockerhub-username>/simple-stateful-app:latest
         #ここを自分のコンテナレジストリのURLに変更します
-        #例：<your-username>/simple-stateful-app:latest
         ports:
         - containerPort: 3000
         env:

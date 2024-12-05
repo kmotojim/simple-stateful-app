@@ -12,9 +12,8 @@ spec:
   source:
     path: manifest/nodejs
     repoURL: >-
-      https://gitlab.com/masaki-oomura/simple-stateful-app.git
-    #ここを自分のリポジトリのURLに変更します
-    #例：https://gitlab.com/<your-username>/simple-stateful-app.git
+      https://gitlab.com/<your-gitlab-username>/simple-stateful-app.git
+    #自身のGitlabリポジトリ名に変更します
     targetRevision: main
   project: simple-stateful-app
   syncPolicy:
