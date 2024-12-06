@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql
+spec:
+  selector:
+    matchLabels:
+      app: postgresql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels: #Serviceからディスカバリーしてもらう為のKey:Valueをセットします
+        app: postgresql
+    spec:
+      containers:
+      - image: registry.redhat.io/rhel8/postgresql-15 #RedHatが公開している安心安全なpostgresqlコンテナイメージです。
+        name: postgresql
+        envFrom: #別ファイルから環境変数を読み込む様に指定します
+        - secretRef: #Secretを参照するように指定します
+            name: postgresql-secret #対象のSecretファイル名
+        ports:
+        - containerPort: 5432 #postgresqlのポート番号です
+          name: postgresql
+        volumeMounts:
+        - name: postgresql-pv #作成されたPVの名称です
+          mountPath: /var/lib/pgsql/data #永続ボリュームをマウントするべきパスです。これはLinux上で動くpostgresqlの仕様です。
+      volumes:
+      - name: postgresql-pv #PVCから作成するPVの名称を指定します
+        persistentVolumeClaim:
+          claimName: postgresql-pvc #利用するPVCの名称を指定します

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce #アクセスモードはStorageClassによって何が選べるか変わります。AWS EBSは仕様上RWOしか選べません
+  resources:
+    requests:
+      storage: 1Gi #要求するStorage容量です。適切な容量を選択しましょう
