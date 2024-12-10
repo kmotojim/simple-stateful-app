@@ -1,0 +1,188 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+  name: simple-stateful-app-pipeline
+  namespace: simple-stateful-app
+spec:
+  finally:
+    - name: openshift-client
+      params:
+        - name: SCRIPT
+          value: oc rollout restart deployment $(params.DEPLOYMENT_NAME) -n $(params.NAMESPACE_NAME)
+        - name: VERSION
+          value: latest
+      taskRef:
+        kind: ClusterTask
+        name: openshift-client
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
+  params:
+    - default: 'https://gitlab.com/<your-gitlab-username>/simple-stateful-app.git'
+      description: ソースコードを取ってくる先のGitリポジトリのURL
+      name: GIT_URL
+      type: string
+    - default: ./source/Dockerfile
+      description: イメージをBuildする為のDockerfileのありかを示すパス
+      name: DOCKERFILE_PATH
+      type: string
+    - default: ./source
+      description: イメージをBuildする対象のアプリケーションのソースコードのありかを示すパス
+      name: SOURCE_PATH
+      type: string
+    - default: 'image-registry.openshift-image-registry.svc:5000/simple-stateful-app/simple-stateful-app'
+      description: コピー元の内部レジストリのURL
+      name: INTERNAL_REGISTRY_URL
+      type: string
+    - default: docker.io/<your-dockerhub-username>/simple-stateful-app
+      description: コピー先の外部レジストリのURL
+      name: EXTERNAL_REGISTRY_URL
+      type: string
+    - default: node-app-deployment
+      description: ロールアウト対象のDeployment名を指定します
+      name: DEPLOYMENT_NAME
+      type: string
+    - default: simple-stateful-app
+      description: Deploymentの存在するNameSpaceを指定します
+      name: NAMESPACE_NAME
+      type: string
+    - default: 'http://docker-sonarqube-git.sonarqube.svc.cluster.local:9000'
+      description: Serviceから提供されるSonarqubeの内部ホスト名
+      name: SONAR_HOST_URL
+      type: string
+    - default: <your-projectkey>
+      description: SonarqubeのCI統合設定で払い出された`projectKey`
+      name: SONAR_PROJECT_KEY
+      type: string
+    - default: <your-sonar-token>
+      description: SonarqubeのCI統合設定で払い出された`SONAR_TOKEN`
+      name: SONAR_TOKEN
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.GIT_URL)
+        - name: revision
+          value: main
+        - name: refspec
+          value: ''
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: subdirectory
+          value: ''
+        - name: sparseCheckoutDirectories
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+        - name: httpProxy
+          value: ''
+        - name: httpsProxy
+          value: ''
+        - name: noProxy
+          value: ''
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: 'registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:dd5c8d08d52e304a542921634ebe6b5ff3d63c5f68f6d644e88417859b173ec8'
+        - name: userHome
+          value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: workspace
+    - name: buildah
+      params:
+        - name: IMAGE
+          value: $(params.INTERNAL_REGISTRY_URL)
+        - name: BUILDER_IMAGE
+          value: 'registry.redhat.io/rhel8/buildah@sha256:5c7cd7c9a3d49e8905fc98693f6da605aeafae36bde5622dc78e12f31db3cd59'
+        - name: STORAGE_DRIVER
+          value: vfs
+        - name: DOCKERFILE
+          value: $(params.DOCKERFILE_PATH)
+        - name: CONTEXT
+          value: $(params.SOURCE_PATH)
+        - name: TLSVERIFY
+          value: 'true'
+        - name: FORMAT
+          value: oci
+        - name: BUILD_EXTRA_ARGS
+          value: ''
+        - name: PUSH_EXTRA_ARGS
+          value: ''
+        - name: SKIP_PUSH
+          value: 'false'
+      runAfter:
+        - sonarqube-scanner
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: workspace
+    - name: skopeo-copy
+      params:
+        - name: srcImageURL
+          value: 'docker://$(params.INTERNAL_REGISTRY_URL)'
+        - name: destImageURL
+          value: 'docker://$(params.EXTERNAL_REGISTRY_URL)'
+        - name: srcTLSverify
+          value: 'true'
+        - name: destTLSverify
+          value: 'true'
+      runAfter:
+        - trivy-scanner
+      taskRef:
+        kind: ClusterTask
+        name: skopeo-copy
+      workspaces:
+        - name: images-url
+          workspace: workspace
+    - name: trivy-scanner
+      params:
+        - name: ARGS
+          value:
+            - image
+            - '--severity HIGH,CRITICAL'
+        - name: TRIVY_IMAGE
+          value: 'docker.io/aquasec/trivy@sha256:944a044451791617cc0ed2ee4d1942a4f66b790d527fcd0575a6b399ccbc05a1'
+        - name: IMAGE_PATH
+          value: $(params.INTERNAL_REGISTRY_URL)
+        - name: AIR_GAPPED_ENABLED
+          value: 'false'
+      runAfter:
+        - buildah
+      taskRef:
+        kind: Task
+        name: trivy-scanner
+      workspaces:
+        - name: manifest-dir
+          workspace: workspace
+    - name: sonarqube-scanner
+      params:
+        - name: SONAR_HOST_URL
+          value: $(params.SONAR_HOST_URL)
+        - name: SONAR_PROJECT_KEY
+          value: $(params.SONAR_PROJECT_KEY)
+        - name: SONAR_TOKEN
+          value: $(params.SONAR_TOKEN)
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source
+          workspace: workspace
+        - name: sonar-settings
+          workspace: workspace
+  workspaces:
+    - name: workspace
