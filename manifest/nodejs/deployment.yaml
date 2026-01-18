@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: node-app
-        image: <your-dockerhub-username>/simple-stateful-app:latest
+        image: rh_ee_kmotojim/simple-stateful-app:latest
         #ここを自分のコンテナレジストリのURLに変更します
         ports:
         - containerPort: 3000
