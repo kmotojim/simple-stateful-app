@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: node-app
-        image: rh_ee_kmotojim/simple-stateful-app:latest
+        image: quay.io/rh_ee_kmotojim/simple-stateful-app:latest
         #ここを自分のコンテナレジストリのURLに変更します
         ports:
         - containerPort: 3000
