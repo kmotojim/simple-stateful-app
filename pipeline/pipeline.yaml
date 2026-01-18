@@ -17,7 +17,7 @@ spec:
         - name: manifest-dir
           workspace: workspace
   params:
-    - default: 'https://gitlab.com/<your-gitlab-username>/simple-stateful-app.git'
+    - default: 'https://github.com/kmotojim/simple-stateful-app.git'
       description: ソースコードを取ってくる先のGitリポジトリのURL
       name: GIT_URL
       type: string

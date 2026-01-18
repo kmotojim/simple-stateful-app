@@ -12,7 +12,7 @@ spec:
   source:
     path: manifest/mysql
     repoURL: >-
-      https://gitlab.com/quay.io/rh_ee_kmotojim/simple-stateful-app.git
+      https://github.com/kmotojim/simple-stateful-app.git
     #自身のGitlabリポジトリ名に変更します
     targetRevision: main
   project: simple-stateful-app
