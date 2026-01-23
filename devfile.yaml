@@ -1,0 +1,11 @@
+schemaVersion: 2.1.0
+metadata:
+  name: nodejs
+  version: 1.0.0
+projects:
+  - name: devspaces-sample
+    git:
+      remotes:
+        origin: https://github.com/kmotojim/simple-stateful-app.git
+      checkoutFrom:
+        revision: advent-calendar 
